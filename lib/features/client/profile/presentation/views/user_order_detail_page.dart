@@ -71,7 +71,7 @@ class UserOrderDetailsPage extends StatelessWidget {
       CustomSnackbar(
           context: context,
           snackBarType: SnackBarType.success,
-          label: "تم تأكيد الطلب");
+          label: " تم تأكيد الاستلام ");
       Navigator.pop(context, true); // Return to previous screen with success
     } catch (e) {
       Navigator.pop(context); // Dismiss loading indicator
@@ -96,7 +96,7 @@ class UserOrderDetailsPage extends StatelessWidget {
           ),
           onPressed: () => _confirmOrder(context),
           child: const Text(
-            'تأكيد الطلب',
+            "تأكيد الاستلام",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
