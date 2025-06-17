@@ -77,12 +77,14 @@ class _FetchOffersServiceProviderViewState
             onPressed: () async {
               final isActive = await _checkFacilityActive();
               if (!isActive) {
+                if (!context.mounted) return;
                 _showNotActiveSnackBar(context);
                 return;
               }
 
               final hasLocation = await _checkFacilityLocation();
               if (!hasLocation) {
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('قم بإضافة منطقة من الإعدادات أولاً'),
@@ -90,6 +92,7 @@ class _FetchOffersServiceProviderViewState
                 );
                 return;
               }
+              if (!context.mounted) return;
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -136,6 +139,7 @@ class _FetchOffersServiceProviderViewState
                     await BlocProvider.of<FetchOfferServiceProviderCubit>(
                             context)
                         .fetchOfferServiceProvider();
+                    if (!context.mounted) return;
                     BlocProvider.of<FetchOfferServiceProviderCubit>(context)
                         .hasLoaded = false;
                   },
@@ -159,6 +163,7 @@ class _FetchOffersServiceProviderViewState
                     await BlocProvider.of<FetchOfferServiceProviderCubit>(
                             context)
                         .fetchOfferServiceProvider();
+                    if (!context.mounted) return;
                     BlocProvider.of<FetchOfferServiceProviderCubit>(context)
                         .hasLoaded = false;
                   },

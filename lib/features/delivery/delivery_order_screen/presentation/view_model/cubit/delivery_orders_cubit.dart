@@ -1,9 +1,8 @@
 // lib/features/delivery/orders/presentation/cubit/delivery_orders_cubit.dart
 import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/features/client/cart/data/model/order_model.dart';
 import 'package:drivo_app/features/delivery/delivery_order_screen/presentation/view_model/delivery_orders_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'delivery_orders_state.dart';
 
 class DeliveryOrdersCubit extends Cubit<DeliveryOrdersState> {

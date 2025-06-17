@@ -71,12 +71,14 @@ class QuickActionWidget extends StatelessWidget {
                   onTap: () async {
                     final isActive = await _checkFacilityActive();
                     if (!isActive) {
+                      if (!context.mounted) return;
                       _showNotActiveSnackBar(context);
                       return;
                     }
 
                     final hasLocation = await _checkFacilityLocation();
                     if (!hasLocation) {
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('قم بإضافة منطقة من الإعدادات أولاً'),
@@ -84,6 +86,7 @@ class QuickActionWidget extends StatelessWidget {
                       );
                       return;
                     }
+                    if (!context.mounted) return;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -99,12 +102,14 @@ class QuickActionWidget extends StatelessWidget {
                   onTap: () async {
                     final isActive = await _checkFacilityActive();
                     if (!isActive) {
+                      if (!context.mounted) return;
                       _showNotActiveSnackBar(context);
                       return;
                     }
 
                     final hasLocation = await _checkFacilityLocation();
                     if (!hasLocation) {
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('قم بإضافة منطقة من الإعدادات أولاً'),
@@ -112,6 +117,7 @@ class QuickActionWidget extends StatelessWidget {
                       );
                       return;
                     }
+                    if (!context.mounted) return;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -126,6 +132,7 @@ class QuickActionWidget extends StatelessWidget {
                   onTap: () async {
                     final isActive = await _checkFacilityActive();
                     if (!isActive) {
+                      if (!context.mounted) return;
                       _showNotActiveSnackBar(context);
                       return;
                     }
@@ -133,7 +140,7 @@ class QuickActionWidget extends StatelessWidget {
                     final restaurantId =
                         await SharedPreferencesService.getUserId();
                     if (restaurantId == null) return;
-
+                    if (!context.mounted) return;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -185,6 +192,7 @@ class _RestaurantOrdersPageState extends State<RestaurantOrdersPage> {
         _exchangeRate = (response['rate'] as num).toDouble();
       });
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load exchange rate: $e')),
       );
@@ -261,6 +269,7 @@ class _RestaurantOrdersPageState extends State<RestaurantOrdersPage> {
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load orders: $e')),

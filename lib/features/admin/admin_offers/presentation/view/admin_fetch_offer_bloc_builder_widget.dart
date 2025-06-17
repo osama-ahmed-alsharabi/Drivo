@@ -72,6 +72,7 @@ class _AdminFetchOfferBlocBuilderWidgetState
                         true;
                     await BlocProvider.of<AdminFetchOffersCubit>(context)
                         .adminFetchOffers();
+                    if (!context.mounted) return;
                     BlocProvider.of<AdminFetchOffersCubit>(context).hasLoaded =
                         false;
                   },

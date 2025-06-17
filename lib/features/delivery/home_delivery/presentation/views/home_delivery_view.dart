@@ -114,7 +114,7 @@ class HomeDeliveryViewState extends State<HomeDeliveryView> {
         return;
       }
 
-      final response = await Supabase.instance.client.from('delivery').upsert({
+      await Supabase.instance.client.from('delivery').upsert({
         'id': userId,
         'user_name': userName,
         'latitude': position.latitude,
@@ -197,6 +197,8 @@ class _NewOrdersScreenState extends State<NewOrdersScreen> {
       });
     } catch (e) {
       setState(() => _isLoading = false);
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('فشل في تحميل الطلبات: $e')),
       );
@@ -284,6 +286,8 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
       });
     } catch (e) {
       setState(() => _isLoading = false);
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('فشل في تحميل الطلبات: $e')),
       );
@@ -835,109 +839,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         ),
       ),
     );
-  }
-
-  Widget _buildActionButtons() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Row(
-        children: [
-          if (widget.order.status == OrderStatus.pending)
-            Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                ),
-                onPressed: _completeDelivery,
-                child: const Text(
-                  'تم استلام الطلب',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.white),
-                ),
-              ),
-            ),
-          if (widget.order.status == OrderStatus.readyForDelivery)
-            Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                ),
-                onPressed: _startDelivery,
-                child: const Text('بدء التوصيل'),
-              ),
-            ),
-          if (widget.order.status == OrderStatus.shipped)
-            Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                ),
-                onPressed: _completeDelivery,
-                child: const Text('تم التوصيل'),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _acceptOrder() async {
-    try {
-      await Supabase.instance.client.from('orders').update({
-        'delivery_status': 'accepted',
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', widget.order.id);
-
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم قبول الطلب بنجاح')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل في قبول الطلب: $e')),
-      );
-    }
-  }
-
-  Future<void> _startDelivery() async {
-    try {
-      await Supabase.instance.client.from('orders').update({
-        'delivery_status': 'shipped',
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', widget.order.id);
-
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم بدء التوصيل بنجاح')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل في بدء التوصيل: $e')),
-      );
-    }
-  }
-
-  Future<void> _completeDelivery() async {
-    try {
-      await Supabase.instance.client.from('orders').update({
-        'delivery_status': 'delivered',
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', widget.order.id);
-
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم تأكيد التوصيل بنجاح')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل في تأكيد التوصيل: $e')),
-      );
-    }
   }
 
   String _formatDate(DateTime date) {

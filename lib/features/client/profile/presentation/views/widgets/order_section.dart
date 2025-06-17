@@ -32,6 +32,7 @@ class ClientOrderSection extends StatelessWidget {
                 onPressed: () async {
                   // Navigate to orders page
                   await SharedPreferencesService.getUserId();
+                  if (!context.mounted) return;
                   Navigator.push(
                       context,
                       MaterialPageRoute(

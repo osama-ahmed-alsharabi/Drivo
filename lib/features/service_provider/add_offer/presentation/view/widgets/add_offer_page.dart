@@ -24,7 +24,7 @@ class _AddOfferServiceProviderPageState
   final _formKey = GlobalKey<FormState>();
   String? _imagePath;
   late DateTime _endDate = DateTime.now().add(const Duration(days: 7));
-  final bool _isActive = true;
+  // final bool _isActive = true;
 
   Future<void> _pickImage() async {
     final XFile? image = await ImagePickerHelper.pickImageFromGallery();
@@ -153,11 +153,12 @@ class _AddOfferServiceProviderPageState
                                 createdAt: DateTime.now(),
                                 endDate: _endDate,
                               );
-
+                              if (!context.mounted) return;
                               await context.read<AddOfferCubit>().addOffer(
                                     offer: offer,
                                     imagePath: _imagePath!,
                                   );
+                              if (!context.mounted) return;
                               BlocProvider.of<FetchOfferServiceProviderCubit>(
                                       context)
                                   .fetchOfferServiceProvider();

@@ -1,7 +1,6 @@
 // features/admin/deliveries/presentation/view_model/cubit/admin_deliveries_cubit.dart
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/features/admin/admin_delivery/presentation/view_model/cubit/admin_deliveries_state.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AdminDeliveriesCubit extends Cubit<AdminDeliveriesState> {

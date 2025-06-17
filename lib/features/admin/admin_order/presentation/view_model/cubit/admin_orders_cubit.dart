@@ -1,10 +1,9 @@
 // features/admin/orders/presentation/view_model/cubit/admin_orders_cubit.dart
 import 'dart:math';
 
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/features/admin/admin_order/presentation/view_model/cubit/admin_orders_state.dart';
 import 'package:drivo_app/features/client/cart/data/model/order_model.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AdminOrdersCubit extends Cubit<AdminOrdersState> {

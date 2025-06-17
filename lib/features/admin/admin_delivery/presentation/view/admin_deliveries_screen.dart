@@ -1,5 +1,4 @@
 // features/admin/deliveries/presentation/view/admin_deliveries_screen.dart
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drivo_app/features/admin/admin_delivery/presentation/view/delivery_details_screen.dart';
 import 'package:drivo_app/features/admin/admin_delivery/presentation/view_model/cubit/admin_deliveries_cubit.dart';
 import 'package:drivo_app/features/admin/admin_delivery/presentation/view_model/cubit/admin_deliveries_state.dart';
@@ -12,31 +11,6 @@ import 'package:shimmer/shimmer.dart';
 
 class AdminDeliveriesScreen extends StatelessWidget {
   const AdminDeliveriesScreen({super.key});
-
-  Widget _buildSearchField(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: 'ابحث عن مندوب...',
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: Colors.grey[200],
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 20.w,
-            vertical: 16.h,
-          ),
-        ),
-        onChanged: (value) {
-          context.read<AdminDeliveriesCubit>().filterDeliveries(value);
-        },
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,10 +174,13 @@ class _DeliveryCard extends StatelessWidget {
                   SizedBox(width: 16.w),
                   Icon(Icons.email, size: 16.w, color: theme.primaryColor),
                   SizedBox(width: 4.w),
-                  Text(
-                    delivery['email'] ?? 'غير متوفر',
-                    style: theme.textTheme.bodyMedium,
-                    overflow: TextOverflow.ellipsis,
+                  Expanded(
+                    child: Text(
+                      delivery['email'] ?? 'غير متوفر',
+                      style: theme.textTheme.bodyMedium,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                   ),
                 ],
               ),

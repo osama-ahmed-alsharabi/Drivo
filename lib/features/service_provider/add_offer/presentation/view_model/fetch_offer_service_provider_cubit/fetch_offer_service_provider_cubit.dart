@@ -1,8 +1,8 @@
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/core/service/shared_preferences_service.dart';
 import 'package:drivo_app/features/service_provider/add_offer/data/model/offer_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'fetch_offer_service_provider_state.dart';

@@ -1,7 +1,7 @@
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/core/util/app_images.dart';
 import 'package:drivo_app/features/client/home/data/model/category_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'category_state.dart';
 

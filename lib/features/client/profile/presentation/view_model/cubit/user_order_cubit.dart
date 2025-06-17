@@ -1,8 +1,7 @@
 // lib/features/client/orders/presentation/cubit/orders_cubit.dart
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/features/client/profile/data/user_order_repo.dart';
 import 'package:drivo_app/features/client/profile/presentation/view_model/cubit/user_order_state.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserOrdersCubit extends Cubit<UserOrdersState> {

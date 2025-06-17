@@ -24,13 +24,14 @@ class LogoutButtonWidget extends StatelessWidget {
             onPressed: () async {
               final favoriteCubit = context.read<FavoriteCubit>();
               await favoriteCubit.clearFavorites();
+              if (!context.mounted) return;
               context.read<CartCubit>().clearCart();
               await SharedPreferencesService.clearEmail();
               await SharedPreferencesService.clearUser();
               await SharedPreferencesService.clearUserId();
               await SharedPreferencesService.clearUserPhone();
               await SharedPreferencesService.clearUserType();
-
+              if (!context.mounted) return;
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginView()),

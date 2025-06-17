@@ -191,6 +191,7 @@ class _AddAddressMapScreenState extends State<AddAddressMapScreen> {
                             await context
                                 .read<AddressCubit>()
                                 .getAddressFromPosition(newPosition);
+                            if (!context.mounted) return;
                             final state = context.read<AddressCubit>().state;
                             if (state is LocationSelected && mounted) {
                               setState(() {
@@ -218,6 +219,7 @@ class _AddAddressMapScreenState extends State<AddAddressMapScreen> {
                         await context
                             .read<AddressCubit>()
                             .getAddressFromPosition(position);
+                        if (!context.mounted) return;
                         final state = context.read<AddressCubit>().state;
                         if (state is LocationSelected && mounted) {
                           setState(() {
@@ -225,11 +227,10 @@ class _AddAddressMapScreenState extends State<AddAddressMapScreen> {
                           });
                         }
                       } catch (e) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('فشل تحديث العنوان')),
-                          );
-                        }
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('فشل تحديث العنوان')),
+                        );
                       }
                     }
                   : null,
@@ -257,6 +258,7 @@ class _AddAddressMapScreenState extends State<AddAddressMapScreen> {
                       _isLoadingLocation = false;
                     });
                     _moveCamera(position);
+                    if (!context.mounted) return;
                     final state = context.read<AddressCubit>().state;
                     if (state is LocationSelected && mounted) {
                       setState(() {
@@ -267,6 +269,7 @@ class _AddAddressMapScreenState extends State<AddAddressMapScreen> {
                 } catch (e) {
                   if (mounted) {
                     setState(() => _isLoadingLocation = false);
+                    if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                           content:

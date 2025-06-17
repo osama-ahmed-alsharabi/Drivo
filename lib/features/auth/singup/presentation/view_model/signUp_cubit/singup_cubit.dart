@@ -7,13 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
 
 class SignupCubit extends Cubit<SignupState> {
   SignupCubit() : super(SignupInitial());
 
   final SupabaseClient _supabase = Supabase.instance.client;
-  final Uuid _uuid = const Uuid();
   String? _pendingUserId;
   Map<String, dynamic>? _pendingUserData;
 
@@ -33,6 +31,7 @@ class SignupCubit extends Cubit<SignupState> {
     try {
       final isPhoneUnique = await _isPhoneNumberUnique(phoneNumber);
       if (!isPhoneUnique) {
+        if (!context.mounted) return;
         CustomSnackbar(
           context: context,
           snackBarType: SnackBarType.fail,
@@ -87,9 +86,11 @@ class SignupCubit extends Cubit<SignupState> {
 
       emit(SignupSuccess(phoneNumber: phoneNumber));
     } on AuthException catch (e) {
+      if (!context.mounted) return;
       _handleAuthError(e, context);
       emit(SignupFailure(e.message));
     } catch (e) {
+      if (!context.mounted) return;
       _handleGenericError(e, context);
       emit(SignupFailure(e.toString()));
     }
@@ -108,11 +109,11 @@ class SignupCubit extends Cubit<SignupState> {
     }
   }
 
-  bool _isValidPhoneNumber(String phoneNumber) {
-    // Basic validation - adjust according to your requirements
-    final regex = RegExp(r'^[0-9]{10,15}$');
-    return regex.hasMatch(phoneNumber);
-  }
+  // bool _isValidPhoneNumber(String phoneNumber) {
+  //   // Basic validation - adjust according to your requirements
+  //   final regex = RegExp(r'^[0-9]{10,15}$');
+  //   return regex.hasMatch(phoneNumber);
+  // }
 
   Future<void> verifyOtp(String otpCode, BuildContext context) async {
     if (_pendingUserId == null || _pendingUserData == null) {
@@ -165,6 +166,7 @@ class SignupCubit extends Cubit<SignupState> {
       emit(SignupVerificationSuccess(
         userType: userType,
       ));
+      if (!context.mounted) return;
       CustomSnackbar(
         context: context,
         snackBarType: SnackBarType.success,
@@ -219,6 +221,7 @@ class SignupCubit extends Cubit<SignupState> {
       await _sendOtpNotification(otpCode, _pendingUserData!['phone_number']);
 
       emit(SignupOtpResent(phoneNumber: _pendingUserData!['phone_number']));
+      if (!context.mounted) return;
       CustomSnackbar(
         context: context,
         snackBarType: SnackBarType.success,
@@ -336,7 +339,7 @@ class SignupCubit extends Cubit<SignupState> {
         body: 'رمز التحقق الخاص بك هو $otpCode. ستنتهي صلاحيته خلال 15 دقيقة.',
       );
     } catch (e) {
-      print('فشل إرسال الإشعار: $e');
+      throw Exception();
     }
   }
 

@@ -212,31 +212,6 @@ class _RestaurantProfileScreenState extends State<RestaurantProfileScreen> {
     }
   }
 
-  Widget _buildRatingsSection(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('التقييمات',
-            style: theme.textTheme.titleLarge
-                ?.copyWith(fontWeight: FontWeight.bold)),
-        SizedBox(height: 12.h),
-        // You can fetch and display actual reviews here
-        // For now, we'll just show a button to see all reviews
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton(
-            onPressed: () => _showAllReviews(),
-            child: const Text('عرض جميع التقييمات'),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _showAllReviews() {
-    // Implement navigation to a full reviews screen
-  }
-
   Future<void> _refreshRatings(BuildContext context) async {
     try {
       final response =
@@ -259,6 +234,7 @@ class _RestaurantProfileScreenState extends State<RestaurantProfileScreen> {
         widget.restaurant['total_ratings'] = totalRatings;
       });
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to refresh ratings'),
@@ -341,7 +317,7 @@ class _RestaurantProfileScreenState extends State<RestaurantProfileScreen> {
                             rating,
                             reviewController.text,
                           );
-
+                          if (!context.mounted) return;
                           Navigator.pop(context);
                         },
                         child: const Text('تأكيد التقييم'),
@@ -375,7 +351,9 @@ class _RestaurantProfileScreenState extends State<RestaurantProfileScreen> {
         'review': review.isNotEmpty ? review : null,
         'created_at': DateTime.now().toIso8601String(),
       });
+      if (!context.mounted) return;
       await _refreshRatings(context);
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('شكراً لتقييمك!'),
@@ -392,53 +370,6 @@ class _RestaurantProfileScreenState extends State<RestaurantProfileScreen> {
         ),
       );
     }
-  }
-
-  Widget _buildStatisticsCards(ThemeData theme) {
-    return Row(
-      children: [
-        Expanded(
-            child: _buildStatCard(theme,
-                icon: Icons.shopping_basket, value: '1,248', label: 'الطلبات')),
-        SizedBox(width: 12.w),
-        Expanded(
-            child: _buildStatCard(theme,
-                icon: Icons.thumb_up, value: '92%', label: 'رضا العملاء')),
-        SizedBox(width: 12.w),
-        Expanded(
-            child: _buildStatCard(theme,
-                icon: Icons.timer, value: '15-30', label: 'دقيقة')),
-      ],
-    );
-  }
-
-  Widget _buildStatCard(ThemeData theme,
-      {required IconData icon, required String value, required String label}) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(8.r),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 6,
-              offset: const Offset(0, 2))
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(icon, size: 24.w, color: theme.primaryColor),
-          SizedBox(height: 8.h),
-          Text(value,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold)),
-          SizedBox(height: 4.h),
-          Text(label,
-              style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey)),
-        ],
-      ),
-    );
   }
 
   Widget _buildAboutSection(ThemeData theme) {

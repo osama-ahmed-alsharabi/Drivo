@@ -1,6 +1,6 @@
 // service_provider_profile_cubit.dart
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'service_provider_profile_state.dart';

@@ -49,6 +49,38 @@ class UserOrderDetailsPage extends StatelessWidget {
     );
   }
 
+  // Future<void> _confirmOrder(BuildContext context) async {
+  //   try {
+  //     // Show loading indicator
+  //     showDialog(
+  //       context: context,
+  //       barrierDismissible: false,
+  //       barrierColor: Theme.of(context).primaryColor,
+  //       builder: (context) =>
+  //           Center(child: Image.asset(AppImages.logoWaitingGif)),
+  //     );
+
+  //     // Update order status
+  //     await Supabase.instance.client.from('orders').update({
+  //       'order_status': 'delivered',
+  //       'updated_at': DateTime.now().toIso8601String(),
+  //     }).eq('id', order.id);
+
+  //     Navigator.pop(context); // Dismiss loading indicator
+
+  //     CustomSnackbar(
+  //         context: context,
+  //         snackBarType: SnackBarType.success,
+  //         label: " تم تأكيد الاستلام ");
+  //     Navigator.pop(context, true); // Return to previous screen with success
+  //   } catch (e) {
+  //     Navigator.pop(context); // Dismiss loading indicator
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error: $e')),
+  //     );
+  //   }
+  // }
+
   Future<void> _confirmOrder(BuildContext context) async {
     try {
       // Show loading indicator
@@ -60,24 +92,31 @@ class UserOrderDetailsPage extends StatelessWidget {
             Center(child: Image.asset(AppImages.logoWaitingGif)),
       );
 
-      // Update order status
+      // Await the async operation
       await Supabase.instance.client.from('orders').update({
         'order_status': 'delivered',
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', order.id);
 
+      if (!context.mounted) return; // Safeguard after async call
       Navigator.pop(context); // Dismiss loading indicator
 
+      if (!context.mounted) return;
       CustomSnackbar(
-          context: context,
-          snackBarType: SnackBarType.success,
-          label: " تم تأكيد الاستلام ");
+        context: context,
+        snackBarType: SnackBarType.success,
+        label: "تم تأكيد الاستلام",
+      );
+
+      if (!context.mounted) return;
       Navigator.pop(context, true); // Return to previous screen with success
     } catch (e) {
-      Navigator.pop(context); // Dismiss loading indicator
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      if (context.mounted) {
+        Navigator.pop(context); // Dismiss loading indicator
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
     }
   }
 
@@ -308,7 +347,7 @@ class UserOrderDetailsPage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              address.title ?? 'عنوان التوصيل',
+              address.title,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -316,7 +355,7 @@ class UserOrderDetailsPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              address.address ?? 'لم يتم تحديد العنوان',
+              address.address,
               style: const TextStyle(color: Colors.grey),
             ),
           ],

@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/features/service_provider/add_offer/data/model/offer_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart';
 
@@ -40,7 +40,7 @@ class AddOfferCubit extends Cubit<AddingOfferServiceProviderState> {
       final offerWithImage = offer.copyWith(imageUrl: imageUrl);
 
       // 4. Save offer to database using the toJson method
-      final response = await supabaseClient
+      await supabaseClient
           .from('offers')
           .insert(offerWithImage.toJson(offerWithImage));
 

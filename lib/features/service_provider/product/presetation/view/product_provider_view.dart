@@ -126,12 +126,14 @@ class _ProductsSeviceProviderViewState
             onPressed: () async {
               final isActive = await _checkFacilityActive();
               if (!isActive) {
+                if (!context.mounted) return;
                 _showNotActiveSnackBar(context);
                 return;
               }
 
               final hasLocation = await _checkFacilityLocation();
               if (!hasLocation) {
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('قم بإضافة منطقة من الإعدادات أولاً'),
@@ -139,6 +141,7 @@ class _ProductsSeviceProviderViewState
                 );
                 return;
               }
+              if (!context.mounted) return;
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -289,6 +292,7 @@ class _ProductsSeviceProviderViewState
                                           FetchProductsServiceProviderCubit>(
                                       context)
                                   .fetchProducts();
+                              if (!context.mounted) return;
                               BlocProvider.of<
                                           FetchProductsServiceProviderCubit>(
                                       context)

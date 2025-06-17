@@ -71,7 +71,7 @@ class Order {
         deliveryAddress: deliveryAddress ?? this.deliveryAddress,
         items: items ?? List.from(this.items),
         customerNotes: customerNotes ?? this.customerNotes,
-        isFreeDelivery: isFreeDelivery ?? isFreeDelivery,
+        isFreeDelivery: isFreeDelivery,
         deliveryId: deliveryId ?? this.deliveryId);
   }
 

@@ -131,7 +131,6 @@ extension FavoriteDatabase on DatabaseService {
       try {
         return ProductModel.fromJsonString(e['productData'] as String);
       } catch (error) {
-        print('Error parsing favorite product: $error');
         return ProductModel(
           id: e['id'] as String? ?? '',
           name: e['name'] as String? ?? 'Unknown',

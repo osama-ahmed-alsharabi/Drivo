@@ -19,6 +19,7 @@ class LuncherHelperFunctions {
         throw 'لا يمكن فتح تطبيق الهاتف';
       }
     } catch (e) {
+      if (!context.mounted) return;
       CustomSnackbar(
           context: context,
           snackBarType: SnackBarType.fail,
@@ -42,6 +43,7 @@ class LuncherHelperFunctions {
         );
       }
     } catch (e) {
+      if (!context.mounted) return;
       CustomSnackbar(
           context: context,
           snackBarType: SnackBarType.fail,

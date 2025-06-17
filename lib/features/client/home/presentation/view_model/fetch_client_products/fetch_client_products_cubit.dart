@@ -1,9 +1,7 @@
 // fetch_client_products_cubit.dart
-import 'dart:developer';
-
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/features/service_provider/product/data/model/product_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'fetch_client_products_state.dart';
@@ -59,7 +57,6 @@ class FetchClientProductsCubit extends Cubit<FetchClientProductsState> {
         emit(FetchClientProductsSuccess());
         hasLoaded = false;
       } catch (e) {
-        print('Error fetching products: $e');
         emit(FetchClientProductsFaulier());
       }
     }

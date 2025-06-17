@@ -86,7 +86,6 @@ class ProductModel {
       final data = jsonDecode(jsonString) as Map<String, dynamic>;
       return ProductModel.fromJson(data);
     } catch (e) {
-      print('Error parsing ProductModel from JSON string: $e');
       // Return a default product
       return ProductModel(
         name: 'Unknown',

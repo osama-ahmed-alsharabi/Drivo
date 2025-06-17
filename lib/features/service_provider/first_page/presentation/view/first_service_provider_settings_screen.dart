@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drivo_app/core/helpers/custom_snackbar.dart';
 import 'package:drivo_app/core/service/shared_preferences_service.dart';
 import 'package:drivo_app/features/service_provider/first_page/presentation/view_model/cubit/facility_cubit.dart';
@@ -8,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -467,15 +465,6 @@ class _FirstServiceProviderSettingsScreenState
     }
   }
 
-// Helper function to format time with AM/PM
-  String _formatTimeWithAmPm(TimeOfDay time) {
-    final hour = time.hourOfPeriod;
-    final minute = time.minute.toString().padLeft(2, '0');
-    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
-    return '$hour:$minute $period';
-  }
-
-  // ====== UPDATED LOCATION HANDLING (USING GEOLOCATOR) ======
   Future<void> _selectLocation(BuildContext context) async {
     try {
       // Check permissions
@@ -501,6 +490,7 @@ class _FirstServiceProviderSettingsScreenState
       LatLng initialLocation = LatLng(position.latitude, position.longitude);
 
       // Open map picker
+      if (!context.mounted) return;
       final LatLng? selectedLocation = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -538,6 +528,7 @@ class _FirstServiceProviderSettingsScreenState
         }
       }
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
       );
@@ -576,6 +567,7 @@ class _FirstServiceProviderSettingsScreenState
       }
 
       final userId = await SharedPreferencesService.getUserId();
+      if (!mounted) return;
       context
           .read<FacilityCubit>()
           .saveFacilityInfo(
@@ -662,6 +654,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             _mapController.animateCamera(CameraUpdate.newLatLng(currentLatLng));
             setState(() => _selectedLocation = currentLatLng);
           } catch (e) {
+            if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Error: $e")),
             );

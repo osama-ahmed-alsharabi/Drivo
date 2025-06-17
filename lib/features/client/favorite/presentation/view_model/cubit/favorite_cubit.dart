@@ -1,6 +1,6 @@
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/core/service/local_database_service.dart';
 import 'package:drivo_app/features/service_provider/product/data/model/product_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

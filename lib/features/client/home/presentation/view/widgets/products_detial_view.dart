@@ -434,10 +434,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
                           var email = await SharedPreferencesService.getEmail();
                           if (email == null) {
+                            if (!context.mounted) return;
                             _showOrderConfirmation(context);
                             return;
                           }
-
+                          if (!context.mounted) return;
                           context
                               .read<CartCubit>()
                               .addToCart(widget.product, quantity: _quantity);

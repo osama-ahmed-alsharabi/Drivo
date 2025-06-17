@@ -13,32 +13,6 @@ import 'package:shimmer/shimmer.dart';
 class AdminFetchFacilities extends StatelessWidget {
   const AdminFetchFacilities({super.key});
 
-  Widget _buildSearchField(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      child: TextField(
-        textDirection: TextDirection.rtl,
-        decoration: InputDecoration(
-          hintText: 'ابحث عن مطعم...',
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: Colors.grey[200],
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 20.w,
-            vertical: 16.h,
-          ),
-        ),
-        onChanged: (value) {
-          context.read<AdminFetchFacilitiesCubit>().filterRestaurants(value);
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -309,14 +283,4 @@ class _RestaurantCard extends StatelessWidget {
       ),
     );
   }
-}
-
-void _navigateToRestaurantProfile(
-    BuildContext context, Map<String, dynamic> restaurant) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => RestaurantProfileScreen(restaurant: restaurant),
-    ),
-  );
 }

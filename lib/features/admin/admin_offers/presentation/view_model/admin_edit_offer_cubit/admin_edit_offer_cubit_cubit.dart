@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/features/service_provider/add_offer/data/model/offer_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'admin_edit_offer_cubit_state.dart';

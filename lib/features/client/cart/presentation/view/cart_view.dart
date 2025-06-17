@@ -258,7 +258,7 @@ class CartPage extends StatelessWidget {
       }
       return;
     }
-
+    if (!context.mounted) return;
     context.read<OrderCubit>().submitOrder(
           cartItems: cartState.cartItems,
           address: address,

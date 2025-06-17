@@ -44,7 +44,6 @@ class AdminReportView extends StatelessWidget {
       context: context,
       firstDate: DateTime(2020),
       saveText: "حفظ",
-      fieldStartLabelText: "البداية",
       lastDate: now,
       barrierColor: Theme.of(context).primaryColor,
       initialDateRange: DateTimeRange(

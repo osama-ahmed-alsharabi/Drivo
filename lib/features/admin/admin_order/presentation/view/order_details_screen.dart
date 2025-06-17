@@ -391,9 +391,13 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 
   Future<void> _launchMaps(double lat, double lng) async {
-    final url = 'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
-    if (await canLaunch(url)) {
-      await launch(url);
+    final Uri url =
+        Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url,
+          mode: LaunchMode
+              .externalApplication); // Optional: open in Google Maps app or browser
     } else {
       throw 'Could not launch $url';
     }

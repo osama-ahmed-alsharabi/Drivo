@@ -2,7 +2,6 @@
 import 'package:drivo_app/core/service/shared_preferences_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LocationService {

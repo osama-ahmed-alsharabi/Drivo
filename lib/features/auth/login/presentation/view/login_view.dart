@@ -3,7 +3,6 @@ import 'package:drivo_app/core/routes/app_routes.dart';
 import 'package:drivo_app/features/auth/login/presentation/view/widgets/form_login_widget.dart';
 import 'package:drivo_app/features/auth/login/presentation/view_model/cubit/login_cubit.dart';
 import 'package:drivo_app/features/auth/login/presentation/view_model/cubit/login_state.dart';
-import 'package:drivo_app/features/service_provider/first_page/presentation/view/first_service_provider_settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';

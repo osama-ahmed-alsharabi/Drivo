@@ -1,12 +1,10 @@
 import 'package:drivo_app/core/helpers/custom_snackbar.dart';
-import 'package:drivo_app/core/helpers/image_picker_helper.dart';
 import 'package:drivo_app/features/admin/admin_offers/presentation/view_model/admin_edit_offer_cubit/admin_edit_offer_cubit_cubit.dart';
 import 'package:drivo_app/features/admin/admin_offers/presentation/view_model/admin_fetch_offer_cubit/admin_fetch_offers_cubit.dart';
 import 'package:drivo_app/features/service_provider/add_offer/data/model/offer_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
@@ -24,37 +22,11 @@ class _AdminEditOfferWidgetState extends State<AdminEditOfferWidget> {
   String? _imagePath;
   late DateTime _endDate;
   late bool _isActive;
-  File? _imageFile;
-
   @override
   void initState() {
     super.initState();
     _endDate = widget.offer.endDate;
     _isActive = widget.offer.isActive;
-  }
-
-  Future<void> _pickImage() async {
-    final XFile? image = await ImagePickerHelper.pickImageFromGallery();
-    if (image != null) {
-      setState(() {
-        _imagePath = image.path;
-        _imageFile = File(image.path);
-      });
-    }
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _endDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != _endDate) {
-      setState(() {
-        _endDate = picked;
-      });
-    }
   }
 
   @override
@@ -75,6 +47,7 @@ class _AdminEditOfferWidgetState extends State<AdminEditOfferWidget> {
               await BlocProvider.of<AdminFetchOffersCubit>(context)
                   .adminFetchOffers();
               // if (mounted) {
+              if (!context.mounted) return;
               Navigator.pop(context);
               Navigator.pop(context);
               CustomSnackbar(

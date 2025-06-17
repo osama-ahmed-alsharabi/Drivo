@@ -7,7 +7,6 @@ class ImagePickerHelper {
       final picker = ImagePicker();
       return await picker.pickImage(source: ImageSource.gallery);
     } catch (e) {
-      print('Error picking image: $e');
       return null;
     }
   }
@@ -23,7 +22,6 @@ class ImagePickerHelper {
       final picker = ImagePicker();
       return await picker.pickImage(source: ImageSource.camera);
     } catch (e) {
-      print('Error capturing image: $e');
       return null;
     }
   }

@@ -26,7 +26,7 @@ class LogoutButtonWidgetServiceProvider extends StatelessWidget {
               await SharedPreferencesService.clearUserType();
               await SharedPreferencesService.clearProducts();
               await SharedPreferencesService.clearOffers();
-
+              if (!context.mounted) return;
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginView()),

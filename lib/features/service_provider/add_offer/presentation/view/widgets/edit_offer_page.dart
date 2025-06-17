@@ -22,13 +22,13 @@ class _EditOfferPageState extends State<EditOfferPage> {
   final _formKey = GlobalKey<FormState>();
   String? _imagePath;
   late DateTime _endDate;
-  late bool _isActive;
+  // late bool _isActive;
 
   @override
   void initState() {
     super.initState();
     _endDate = widget.offer.endDate;
-    _isActive = widget.offer.isActive;
+    // _isActive = widget.offer.isActive;
   }
 
   Future<void> _pickImage() async {
@@ -70,6 +70,7 @@ class _EditOfferPageState extends State<EditOfferPage> {
                   .hasLoaded = true;
               await BlocProvider.of<FetchOfferServiceProviderCubit>(context)
                   .fetchOfferServiceProvider();
+              if (!context.mounted) return;
               Navigator.pop(context, true);
             } else if (state is EditOfferFailure) {
               CustomSnackbar(
@@ -182,6 +183,7 @@ class _EditOfferPageState extends State<EditOfferPage> {
                                     .editOffer(
                                         offer: updatedOffer,
                                         imagePath: _imagePath);
+                                if (!context.mounted) return;
                                 BlocProvider.of<FetchOfferServiceProviderCubit>(
                                     context);
                               }

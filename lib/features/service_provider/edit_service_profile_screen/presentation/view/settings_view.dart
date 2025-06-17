@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -30,9 +29,6 @@ class _EditServiceProviderProfileScreenState
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _instagramController = TextEditingController();
-  final TextEditingController _twitterController = TextEditingController();
-  final TextEditingController _snapchatController = TextEditingController();
 
   File? _coverImageFile;
   File? _profileImageFile;
@@ -553,7 +549,7 @@ class _EditServiceProviderProfileScreenState
       if (_selectedLocation != null) {
         initialLocation = _selectedLocation!;
       }
-
+      if (!context.mounted) return;
       final LatLng? selectedLocation = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -591,6 +587,7 @@ class _EditServiceProviderProfileScreenState
         }
       }
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
       );
@@ -695,6 +692,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             _mapController.animateCamera(CameraUpdate.newLatLng(currentLatLng));
             setState(() => _selectedLocation = currentLatLng);
           } catch (e) {
+            if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Error: $e")),
             );

@@ -24,10 +24,11 @@ class _UserOrdersListPageState extends State<UserOrdersListPage> {
   void initState() {
     super.initState();
     _fetchExchangeRate();
-    // Initialize date formatting for Arabic locale
+
     initializeDateFormatting('ar').then((_) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         final userId = await SharedPreferencesService.getUserId();
+        if (!mounted) return;
         if (userId != null) {
           context.read<UserOrdersCubit>().fetchOrders(userId);
         }
@@ -99,6 +100,7 @@ class _UserOrdersListPageState extends State<UserOrdersListPage> {
       onRefresh: () async {
         final userId = await SharedPreferencesService.getUserId();
         if (userId != null) {
+          if (!context.mounted) return;
           context.read<UserOrdersCubit>().fetchOrders(userId);
         }
       },
@@ -126,6 +128,7 @@ class _UserOrdersListPageState extends State<UserOrdersListPage> {
                   if (confirmed == true) {
                     // Refresh orders if needed
                     final userId = await SharedPreferencesService.getUserId();
+                    if (!context.mounted) return;
                     if (userId != null) {
                       context.read<UserOrdersCubit>().fetchOrders(userId);
                     }
@@ -155,7 +158,6 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd MMM yyyy', 'ar');
-    final currencyFormat = NumberFormat.currency(symbol: 'ر.س', locale: 'ar');
 
     return Card(
       elevation: 2,

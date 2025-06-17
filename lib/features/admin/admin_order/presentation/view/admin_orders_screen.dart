@@ -13,31 +13,6 @@ import 'package:shimmer/shimmer.dart';
 class AdminOrdersScreen extends StatelessWidget {
   const AdminOrdersScreen({super.key});
 
-  Widget _buildSearchField(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: 'ابحث عن طلب...',
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: Colors.grey[200],
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 20.w,
-            vertical: 16.h,
-          ),
-        ),
-        onChanged: (value) {
-          context.read<AdminOrdersCubit>().filterOrders(value);
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,6 +39,7 @@ class AdminOrdersScreen extends StatelessWidget {
                     } else if (state is OrderStatusUpdated) {
                       await BlocProvider.of<AdminOrdersCubit>(context)
                           .fetchOrders();
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('تم تحديث حالة الطلب بنجاح'),
@@ -151,7 +127,6 @@ class _OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cubit = context.read<AdminOrdersCubit>();
     final dateFormat = DateFormat('yyyy-MM-dd – hh:mm a');
     final currencyFormat = NumberFormat.currency(locale: 'ar', symbol: 'ر.س');
 

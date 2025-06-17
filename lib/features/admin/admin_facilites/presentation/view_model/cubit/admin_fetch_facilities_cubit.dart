@@ -1,7 +1,6 @@
 // features/admin/admin_facilites/presentation/view_model/cubit/admin_fetch_facilities_cubit.dart
-import 'package:bloc/bloc.dart';
 import 'package:drivo_app/features/admin/admin_facilites/presentation/view_model/cubit/admin_fetch_facilities_state.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AdminFetchFacilitiesCubit extends Cubit<AdminFetchFacilitiesState> {

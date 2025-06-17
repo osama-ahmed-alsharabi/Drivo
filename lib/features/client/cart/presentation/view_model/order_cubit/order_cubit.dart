@@ -36,7 +36,6 @@ class OrderCubit extends Cubit<OrderState> {
   }) async {
     try {
       emit(OrderSubmitting());
-      print('OrderCubit: Submitting order...');
 
       // Get client data including points
       final clientResponse = await _supabase
@@ -151,15 +150,12 @@ class OrderCubit extends Cubit<OrderState> {
           .from('clients')
           .update({'points': newPoints}).eq('id', userId);
 
-      print('OrderCubit: Order submitted successfully');
       emit(OrderSuccess(
         orderData,
         exchangeRate,
         isFreeDelivery: isFreeDelivery,
       ));
-    } catch (e, stackTrace) {
-      print('OrderCubit Error: $e');
-      print(stackTrace);
+    } catch (e) {
       emit(OrderFailure(e.toString()));
     }
   }

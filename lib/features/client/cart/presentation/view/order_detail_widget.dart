@@ -276,7 +276,7 @@ class OrderDetailsPage extends StatelessWidget {
           CustomSnackbar(
               context: context,
               snackBarType: SnackBarType.success,
-              label: "تأكيد الاستلام");
+              label: "تأكيد الطلب");
           await Future.delayed(const Duration(milliseconds: 1500));
 
           // Close the entire app
@@ -290,7 +290,7 @@ class OrderDetailsPage extends StatelessWidget {
           ),
         ),
         child: const Text(
-          "تأكيد الاستلام",
+          "تأكيد الطلب",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,

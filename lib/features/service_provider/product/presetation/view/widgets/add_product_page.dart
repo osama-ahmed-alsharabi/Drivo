@@ -260,6 +260,7 @@ class _AddProductPageState extends State<AddProductPage> {
 
                               if (widget.product == null) {
                                 if (_imagePath != null) {
+                                  if (!context.mounted) return;
                                   await context
                                       .read<AddProductCubit>()
                                       .addProduct(
@@ -267,6 +268,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                         imagePath: _imagePath!,
                                       );
                                 } else {
+                                  if (!context.mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                         content:
@@ -274,6 +276,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                   );
                                 }
                               } else {
+                                if (!context.mounted) return;
                                 await context
                                     .read<AddProductCubit>()
                                     .updateProduct(
