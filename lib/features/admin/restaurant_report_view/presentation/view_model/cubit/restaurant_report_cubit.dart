@@ -1,36 +1,39 @@
-// lib/features/admin/report/presentation/cubit/admin_report_cubit.dart
+// lib/features/restaurant/report/presentation/cubit/restaurant_report_cubit.dart
 import 'dart:async';
-import 'package:drivo_app/features/admin/admin_reports/presentation/view/admin_report_view.dart';
-import 'package:drivo_app/features/admin/admin_reports/presentation/view_model/cubit/reports_state.dart';
+import 'dart:developer';
+import 'package:drivo_app/features/admin/restaurant_report_view/presentation/restaurant_report_view.dart';
+import 'package:drivo_app/features/admin/restaurant_report_view/presentation/view_model/cubit/restaurant_report_state.dart';
 import 'package:drivo_app/features/client/cart/data/model/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class AdminReportCubit extends Cubit<AdminReportState> {
+class RestaurantReportCubit extends Cubit<RestaurantReportState> {
   final SupabaseClient supabaseClient = Supabase.instance.client;
+  final String restaurantId;
   DateTime? startDate;
   DateTime? endDate;
 
-  AdminReportCubit() : super(AdminReportInitial()) {
-    // Set default range to last 7 days
+  RestaurantReportCubit({required this.restaurantId})
+      : super(RestaurantReportInitial()) {
     final now = DateTime.now();
     startDate = now.subtract(const Duration(days: 7));
     endDate = now;
   }
 
   Future<void> fetchReport() async {
-    emit(AdminReportLoading());
+    emit(RestaurantReportLoading());
     try {
       final report = await _generateReport();
-      emit(AdminReportLoaded(
+      emit(RestaurantReportLoaded(
         report,
         startDate: startDate,
         endDate: endDate,
       ));
     } catch (e) {
-      emit(AdminReportError(e.toString()));
+      log(e.toString());
+      emit(RestaurantReportError(e.toString()));
     }
   }
 
@@ -40,43 +43,24 @@ class AdminReportCubit extends Cubit<AdminReportState> {
     fetchReport();
   }
 
-  Future<AdminReport> _generateReport() async {
+  Future<RestaurantReport> _generateReport() async {
     if (startDate == null || endDate == null) {
       throw Exception('Date range not set');
     }
 
-    // Adjust times to include entire days
     final start = DateTime(startDate!.year, startDate!.month, startDate!.day);
     final end =
         DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59);
 
-    // Fetch new clients
-    final clientsResponse = await supabaseClient
-        .from('clients')
-        .select()
-        .gte('created_at', start.toIso8601String())
-        .lte('created_at', end.toIso8601String());
-    final newClients = clientsResponse.length;
-
-    // Fetch new facilities
-    final facilitiesResponse = await supabaseClient
-        .from('facilities')
-        .select()
-        .gte('created_at', start.toIso8601String())
-        .lte('created_at', end.toIso8601String());
-    final newFacilities = facilitiesResponse.length;
-
-    // Fetch orders
     final ordersResponse = await supabaseClient
         .from('orders')
         .select()
         .gte('created_at', start.toIso8601String())
-        .lte('created_at', end.toIso8601String());
-
+        .lte('created_at', end.toIso8601String())
+        .filter('items', 'cs', '[{"restaurant_id": "$restaurantId"}]');
     final orders = ordersResponse.map((json) => Order.fromJson(json)).toList();
     final totalOrders = orders.length;
 
-    // Calculate revenue
     double totalRevenue = orders
         .where((order) =>
             order.status != OrderStatus.cancelled &&
@@ -122,9 +106,7 @@ class AdminReportCubit extends Cubit<AdminReportState> {
         ? revenueByDay.entries.reduce((a, b) => a.value > b.value ? a : b)
         : const MapEntry('', 0.0);
 
-    return AdminReport(
-      newClients: newClients,
-      newFacilities: newFacilities,
+    return RestaurantReport(
       totalOrders: totalOrders,
       totalRevenue: totalRevenue,
       orderStatusCounts: statusCounts.entries

@@ -1,6 +1,13 @@
-import 'package:drivo_app/features/client/cart/data/model/order_model.dart';
+// lib/features/admin/report/presentation/view_model/cubit/reports_state.dart
+import 'package:drivo_app/features/admin/admin_reports/presentation/view/admin_report_view.dart';
+import 'package:equatable/equatable.dart';
 
-abstract class AdminReportState {}
+abstract class AdminReportState extends Equatable {
+  const AdminReportState();
+
+  @override
+  List<Object> get props => [];
+}
 
 class AdminReportInitial extends AdminReportState {}
 
@@ -8,45 +15,20 @@ class AdminReportLoading extends AdminReportState {}
 
 class AdminReportLoaded extends AdminReportState {
   final AdminReport report;
+  final DateTime? startDate;
+  final DateTime? endDate;
 
-  AdminReportLoaded(this.report);
+  const AdminReportLoaded(this.report, {this.startDate, this.endDate});
+
+  @override
+  List<Object> get props => [report, startDate ?? '', endDate ?? ''];
 }
 
 class AdminReportError extends AdminReportState {
   final String message;
 
-  AdminReportError(this.message);
-}
+  const AdminReportError(this.message);
 
-// lib/features/admin/report/data/models/admin_report.dart
-
-class AdminReport {
-  final int newClients;
-  final int newFacilities;
-  final int totalOrders;
-  final double totalRevenue;
-  final List<OrderStatusCount> orderStatusCounts;
-  final double averageOrdersPerDay;
-  final double averageRevenuePerDay;
-  final DateTime bestDayForOrders;
-  final DateTime bestDayForRevenue;
-
-  AdminReport({
-    required this.newClients,
-    required this.newFacilities,
-    required this.totalOrders,
-    required this.totalRevenue,
-    required this.orderStatusCounts,
-    required this.averageOrdersPerDay,
-    required this.averageRevenuePerDay,
-    required this.bestDayForOrders,
-    required this.bestDayForRevenue,
-  });
-}
-
-class OrderStatusCount {
-  final OrderStatus status;
-  final int count;
-
-  OrderStatusCount(this.status, this.count);
+  @override
+  List<Object> get props => [message];
 }

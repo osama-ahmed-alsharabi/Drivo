@@ -2,6 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drivo_app/features/admin/admin_facilites/presentation/view_model/cubit/admin_fetch_facilities_cubit.dart';
 import 'package:drivo_app/features/admin/admin_facilites/presentation/view_model/cubit/admin_fetch_facilities_state.dart';
+import 'package:drivo_app/features/admin/restaurant_report_view/presentation/restaurant_report_view.dart';
 import 'package:drivo_app/features/client/restaurant_list/presentation/view/restaurant_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -97,7 +98,7 @@ class AdminFetchFacilities extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 16.w,
         mainAxisSpacing: 16.h,
-        childAspectRatio: 0.7,
+        childAspectRatio: 0.6,
       ),
       itemCount: restaurants.length,
       itemBuilder: (context, index) {
@@ -248,6 +249,39 @@ class _RestaurantCard extends StatelessWidget {
                             restaurant['is_active'] ?? false
                                 ? "مفعل"
                                 : "غير مفعل",
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          // Example usage in your navigation
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RestaurantReportView(
+                                restaurantId: restaurant['id'].toString(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.w,
+                            vertical: 4.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Text(
+                            "التقارير",
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

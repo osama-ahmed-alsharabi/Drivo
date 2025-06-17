@@ -1,30 +1,33 @@
-// lib/features/admin/report/presentation/views/admin_report_view.dart
-import 'package:drivo_app/features/admin/admin_reports/presentation/view_model/cubit/reports_cubit.dart';
-import 'package:drivo_app/features/admin/admin_reports/presentation/view_model/cubit/reports_state.dart';
+// lib/features/restaurant/report/presentation/views/restaurant_report_view.dart
+import 'package:drivo_app/features/admin/restaurant_report_view/presentation/view_model/cubit/restaurant_report_cubit.dart';
+import 'package:drivo_app/features/admin/restaurant_report_view/presentation/view_model/cubit/restaurant_report_state.dart';
 import 'package:drivo_app/features/client/cart/data/model/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-class AdminReportView extends StatelessWidget {
-  const AdminReportView({super.key});
+class RestaurantReportView extends StatelessWidget {
+  final String restaurantId;
+
+  const RestaurantReportView({super.key, required this.restaurantId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AdminReportCubit()..fetchReport(),
+      create: (context) =>
+          RestaurantReportCubit(restaurantId: restaurantId)..fetchReport(),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
-          title: const Text('تقرير الأداء'),
+          title: const Text('تقرير المطعم'),
           centerTitle: true,
         ),
-        body: BlocBuilder<AdminReportCubit, AdminReportState>(
+        body: BlocBuilder<RestaurantReportCubit, RestaurantReportState>(
           builder: (context, state) {
             return LiquidPullToRefresh(
               onRefresh: () async =>
-                  context.read<AdminReportCubit>().fetchReport(),
+                  context.read<RestaurantReportCubit>().fetchReport(),
               child: _buildBody(context, state),
             );
           },
@@ -34,7 +37,7 @@ class AdminReportView extends StatelessWidget {
   }
 
   void _showDatePicker(BuildContext context) {
-    final cubit = context.read<AdminReportCubit>();
+    final cubit = context.read<RestaurantReportCubit>();
     final now = DateTime.now();
     final initialStart =
         cubit.startDate ?? now.subtract(const Duration(days: 7));
@@ -43,10 +46,7 @@ class AdminReportView extends StatelessWidget {
     showDateRangePicker(
       context: context,
       firstDate: DateTime(2020),
-      saveText: "حفظ",
-      fieldStartLabelText: "البداية",
       lastDate: now,
-      barrierColor: Theme.of(context).primaryColor,
       initialDateRange: DateTimeRange(
         start: initialStart,
         end: initialEnd,
@@ -58,12 +58,12 @@ class AdminReportView extends StatelessWidget {
     });
   }
 
-  Widget _buildBody(BuildContext context, AdminReportState state) {
-    if (state is AdminReportLoading) {
+  Widget _buildBody(BuildContext context, RestaurantReportState state) {
+    if (state is RestaurantReportLoading) {
       return const Center(child: CircularProgressIndicator());
-    } else if (state is AdminReportError) {
+    } else if (state is RestaurantReportError) {
       return Center(child: Text('حدث خطأ: ${state.message}'));
-    } else if (state is AdminReportLoaded) {
+    } else if (state is RestaurantReportLoaded) {
       return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -73,8 +73,6 @@ class AdminReportView extends StatelessWidget {
             const SizedBox(height: 24),
             _buildSummaryCards(state.report),
             const SizedBox(height: 32),
-            _buildOrderStatusChart(state.report, context),
-            const SizedBox(height: 32),
             _buildDetailedStats(state.report, context),
           ],
         ),
@@ -83,7 +81,7 @@ class AdminReportView extends StatelessWidget {
     return const Center(child: Text('اسحب للتحديث'));
   }
 
-  Widget _buildHeader(BuildContext context, AdminReportLoaded state) {
+  Widget _buildHeader(BuildContext context, RestaurantReportLoaded state) {
     final dateFormat = DateFormat('yyyy/MM/dd');
     final rangeText = state.startDate != null && state.endDate != null
         ? '${dateFormat.format(state.startDate!)} - ${dateFormat.format(state.endDate!)}'
@@ -96,7 +94,7 @@ class AdminReportView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'تقرير الأداء',
+              'تقرير المطعم',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey[800],
@@ -120,7 +118,7 @@ class AdminReportView extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCards(AdminReport report) {
+  Widget _buildSummaryCards(RestaurantReport report) {
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -129,18 +127,6 @@ class AdminReportView extends StatelessWidget {
       crossAxisSpacing: 16,
       childAspectRatio: 0.9,
       children: [
-        _buildSummaryCard(
-          title: 'العملاء الجدد',
-          value: report.newClients,
-          icon: Icons.group_add,
-          color: Colors.blue,
-        ),
-        _buildSummaryCard(
-          title: 'المنشآت الجديدة',
-          value: report.newFacilities,
-          icon: Icons.store,
-          color: Colors.green,
-        ),
         _buildSummaryCard(
           title: 'الطلبات',
           value: report.totalOrders,
@@ -209,10 +195,9 @@ class AdminReportView extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderStatusChart(AdminReport report, BuildContext context) {
+  Widget _buildOrderStatusChart(RestaurantReport report, BuildContext context) {
     final totalOrders = report.totalOrders;
 
-    // 1. Corrected filtering logic
     final filteredStatusCounts = report.orderStatusCounts.where((statusCount) {
       final displayText = statusCount.status.displayText;
       return displayText != "جاهز للتوصيل" &&
@@ -232,11 +217,9 @@ class AdminReportView extends StatelessWidget {
               ),
         ),
         const SizedBox(height: 16),
-        // 2. Use the filtered list
         ...filteredStatusCounts.map((statusCount) {
-          final percentage = totalOrders > 0
-              ? (statusCount.count / totalOrders * 100)
-              : 0.0; // 3. Fixed type conversion
+          final percentage =
+              totalOrders > 0 ? (statusCount.count / totalOrders * 100) : 0.0;
 
           return _buildStatusBar(
             status: statusCount.status,
@@ -313,7 +296,7 @@ class AdminReportView extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailedStats(AdminReport report, context) {
+  Widget _buildDetailedStats(RestaurantReport report, context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -368,11 +351,9 @@ class AdminReportView extends StatelessWidget {
   }
 }
 
-// lib/features/admin/report/data/model/admin_report_model.dart
+// lib/features/restaurant/report/data/model/restaurant_report_model.dart
 
-class AdminReport {
-  final int newClients;
-  final int newFacilities;
+class RestaurantReport {
   final int totalOrders;
   final double totalRevenue;
   final List<OrderStatusCount> orderStatusCounts;
@@ -381,9 +362,7 @@ class AdminReport {
   final DateTime bestDayForOrders;
   final DateTime bestDayForRevenue;
 
-  AdminReport({
-    required this.newClients,
-    required this.newFacilities,
+  RestaurantReport({
     required this.totalOrders,
     required this.totalRevenue,
     required this.orderStatusCounts,
