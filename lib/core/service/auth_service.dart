@@ -26,6 +26,13 @@ class SupabaseService {
     return response;
   }
 
+  Future<Map<String, dynamic>> getFacilityById(String facilityId) async {
+    final response =
+        await _client.from('facilities').select().eq('id', facilityId).single();
+
+    return response;
+  }
+
   // Login with email and password
   Future<AuthResponse> login({
     required String email,
@@ -39,7 +46,7 @@ class SupabaseService {
 
   // Google Sign In
   Future<AuthResponse> signInWithGoogle() async {
-    final response = await Supabase.instance.client.auth.signInWithOAuth(
+    await Supabase.instance.client.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: 'yourapp://auth-callback',
     );

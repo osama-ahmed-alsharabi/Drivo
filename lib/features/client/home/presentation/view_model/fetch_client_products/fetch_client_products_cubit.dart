@@ -1,54 +1,5 @@
-// import 'package:bloc/bloc.dart';
-// import 'package:drivo_app/features/service_provider/product/data/model/product_model.dart';
-// import 'package:equatable/equatable.dart';
-// import 'package:supabase_flutter/supabase_flutter.dart';
-
-// part 'fetch_client_products_state.dart';
-
-// class FetchClientProductsCubit extends Cubit<FetchClientProductsState> {
-//   FetchClientProductsCubit() : super(FetchClientProductsInitial());
-//   final SupabaseClient _supabaseClient = Supabase.instance.client;
-//   bool hasLoaded = false;
-//   List<ProductModel> products = [];
-//   fetchClientProducts() async {
-//     if (hasLoaded) {
-//       emit(FetchClientProductsLoading());
-//       try {
-//         // First get the current exchange rate
-//         final exchangeResponse = await _supabaseClient
-//             .from('exchange_rate')
-//             .select('rate')
-//             .order('created_at', ascending: false)
-//             .limit(1)
-//             .single();
-
-//         final exchangeRate = (exchangeResponse['rate'] as num).toDouble();
-
-//         // Then get products
-//         final response = await _supabaseClient.from("products").select();
-
-//         products = response.map<ProductModel>((e) {
-//           return ProductModel.fromJson(e).copyWith(
-//             exchangeRate: exchangeRate,
-//           );
-//         }).toList();
-
-//         emit(FetchClientProductsSuccess());
-//       } catch (e) {
-//         emit(FetchClientProductsFaulier());
-//       }
-//     }
-
-//     // try {
-//     //   emit(FetchClientProductsLoading());
-//     //   var respons = await _supabaseClient.from("products").select();
-//     //   products = respons.map((e) => ProductModel.fromJson(e)).toList();
-//     //   emit(FetchClientProductsSuccess());
-//     // } catch (e) {
-//     //   emit(FetchClientProductsFaulier());
-//     // }
-//   }
-// }
+// fetch_client_products_cubit.dart
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:drivo_app/features/service_provider/product/data/model/product_model.dart';

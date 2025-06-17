@@ -1,3 +1,4 @@
+// product_grid_view_widget.dart
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drivo_app/core/helpers/price_converter.dart';
 import 'package:drivo_app/core/service/local_database_service.dart';
@@ -6,7 +7,6 @@ import 'package:drivo_app/features/client/home/presentation/view/widgets/product
 import 'package:drivo_app/features/service_provider/product/data/model/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 class ProductGridViewWidget extends StatelessWidget {
   final List<ProductModel> productModel;
@@ -158,12 +158,13 @@ class ProductGridViewWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${PriceConverter.formatNumberWithCommas(PriceConverter.convertToYemeni(
+                          PriceConverter.displayConvertedPrice(
                             saudiPrice: productModel[index].price,
                             exchangeRate: productModel[index].exchangeRate ??
                                 exchange ??
                                 1,
-                          ))} ر.ي',
+                            showBoth: false,
+                          ),
                           style: const TextStyle(color: Colors.blue),
                         ),
                       ],

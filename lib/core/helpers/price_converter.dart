@@ -1,13 +1,22 @@
+// price_converter.dart
 import 'package:intl/intl.dart';
 
 class PriceConverter {
-  static final _formatter = NumberFormat('#,###.##');
+  static final _formatter = NumberFormat('#,###');
 
   static double convertToYemeni({
     required double saudiPrice,
     required double exchangeRate,
   }) {
-    return saudiPrice * exchangeRate;
+    double converted = saudiPrice * exchangeRate;
+
+    // Handle prices below 100
+    if (converted < 100 && converted > 0) {
+      return 100.0;
+    }
+
+    // Round to nearest 100
+    return (converted / 100).roundToDouble() * 100;
   }
 
   static String displayConvertedPrice({
@@ -28,7 +37,6 @@ class PriceConverter {
   }
 
   static String formatNumberWithCommas(double number) {
-    final formatter = NumberFormat('#,###.##');
-    return formatter.format(number);
+    return _formatter.format(number);
   }
 }

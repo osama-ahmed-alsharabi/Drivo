@@ -1,6 +1,5 @@
+// product_model.dart
 import 'dart:convert';
-
-import 'package:drivo_app/core/service/shared_preferences_service.dart';
 
 class ProductModel {
   final String? id;
