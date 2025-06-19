@@ -244,6 +244,7 @@ class _RestaurantOrdersPageState extends State<RestaurantOrdersPage> {
 
         return Order(
           id: orderJson['id'] as String,
+          userId: orderJson["user_id"] as String,
           orderNumber: orderJson['order_number'] as String,
           status: OrderStatusX.fromString(orderJson['order_status'] as String),
           createdAt: DateTime.parse(orderJson['created_at'] as String),
@@ -330,11 +331,13 @@ class _RestaurantOrdersPageState extends State<RestaurantOrdersPage> {
             const SizedBox(height: 8),
             Text('عدد العناصر: ${order.items.length}'),
             const SizedBox(height: 8),
-            Text('المجموع: ${PriceConverter.displayConvertedPrice(
-              saudiPrice: order.totalAmount,
-              exchangeRate: _exchangeRate,
-              showBoth: true,
-            )}'),
+            Text(
+              'المجموع: ${PriceConverter.displayConvertedPrice(
+                saudiPrice: order.totalAmount,
+                exchangeRate: _exchangeRate,
+              )}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => _showOrderDetails(order),
@@ -369,6 +372,13 @@ class _RestaurantOrdersPageState extends State<RestaurantOrdersPage> {
                       saudiPrice: item.unitPrice,
                       exchangeRate: _exchangeRate,
                     )}'),
+                    trailing: Text(
+                      PriceConverter.displayConvertedPrice(
+                        saudiPrice: item.quantity * item.unitPrice,
+                        exchangeRate: _exchangeRate,
+                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   )),
               const SizedBox(height: 10),
               const Text('العنوان:',
@@ -404,14 +414,16 @@ class _RestaurantOrdersPageState extends State<RestaurantOrdersPage> {
 
   Widget _buildPriceRow(String label, double saudiPrice,
       {bool isTotal = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Text(label,
-            style:
-                isTotal ? const TextStyle(fontWeight: FontWeight.bold) : null),
-        Expanded(
-          child: Text(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label,
+              style: isTotal
+                  ? const TextStyle(fontWeight: FontWeight.bold)
+                  : null),
+          Text(
             PriceConverter.displayConvertedPrice(
               saudiPrice: saudiPrice,
               exchangeRate: _exchangeRate,
@@ -419,8 +431,8 @@ class _RestaurantOrdersPageState extends State<RestaurantOrdersPage> {
             style:
                 isTotal ? const TextStyle(fontWeight: FontWeight.bold) : null,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -430,13 +442,21 @@ class _RestaurantOrdersPageState extends State<RestaurantOrdersPage> {
 }
 
 class PriceConverter {
-  static final _formatter = NumberFormat('#,###.##');
+  static final _formatter = NumberFormat('#,###');
 
   static double convertToYemeni({
     required double saudiPrice,
     required double exchangeRate,
   }) {
-    return saudiPrice * exchangeRate;
+    double converted = saudiPrice * exchangeRate;
+
+    // Handle prices below 100
+    if (converted < 100 && converted > 0) {
+      return 100.0;
+    }
+
+    // Round to nearest 100
+    return (converted / 100).roundToDouble() * 100;
   }
 
   static String displayConvertedPrice({
@@ -449,15 +469,13 @@ class PriceConverter {
       exchangeRate: exchangeRate,
     );
 
-    if (showBoth) {
-      return '${_formatter.format(saudiPrice)} ر.س (≈ ${_formatter.format(yemeniPrice)} ريال يمني)';
-    } else {
-      return '${_formatter.format(yemeniPrice)} ريال يمني';
-    }
+    return '${_formatter.format(yemeniPrice)} ريال يمني';
   }
 
   static String formatNumberWithCommas(double number) {
-    final formatter = NumberFormat('#,###.##');
-    return formatter.format(number);
+    return _formatter.format(number);
   }
 }
+
+// Your existing Order, OrderItem, DeliveryAddress, OrderStatusX, PaymentMethodX classes
+// should remain the same as they were in your original code

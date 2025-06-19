@@ -159,7 +159,6 @@ class HomeDeliveryViewState extends State<HomeDeliveryView> {
   }
 }
 
-// باقي الأكواد تبقى كما هي بدون تغيير (NewOrdersScreen, CompletedOrdersScreen, OrderCard, OrderDetailsScreen, ProfileScreen, etc.)
 class NewOrdersScreen extends StatefulWidget {
   final double exchangeRate;
 
@@ -439,12 +438,30 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Position? _currentPosition;
   List<Map<String, dynamic>> _restaurants = [];
   MarkerId? _selectedMarkerId;
+  Map<String, dynamic>? _clientData;
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
     _fetchRestaurants();
+    _fetchClientData();
+  }
+
+  Future<void> _fetchClientData() async {
+    try {
+      final response = await Supabase.instance.client
+          .from('clients')
+          .select('user_name, phone_number')
+          .eq('id', widget.order.userId)
+          .single();
+
+      setState(() {
+        _clientData = response;
+      });
+    } catch (e) {
+      debugPrint('Error fetching client data: $e');
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -652,12 +669,46 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 children: [
                   _buildOrderSummary(),
                   _buildMapSection(),
+                  _buildClientInfo(),
                   _buildItemsList(),
                   _buildDeliveryAddress(),
-                  // if (!widget.isCompleted) _buildActionButtons(),
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildClientInfo() {
+    return Card(
+      margin: const EdgeInsets.all(10),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('معلومات العميل',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8),
+            _buildInfoRow('الاسم', _clientData?['user_name'] ?? 'غير متوفر'),
+            const Divider(),
+            _buildInfoRow(
+                'رقم الجوال', _clientData?['phone_number'] ?? 'غير متوفر'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: const TextStyle(color: Colors.grey)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+        ],
+      ),
     );
   }
 

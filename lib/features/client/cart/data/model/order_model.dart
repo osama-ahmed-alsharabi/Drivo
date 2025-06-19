@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class Order {
   final String id;
+  final String userId;
   final String orderNumber;
   final OrderStatus status;
   final DateTime createdAt;
@@ -21,6 +22,7 @@ class Order {
 
   const Order(
       {required this.id,
+      required this.userId,
       required this.orderNumber,
       required this.status,
       required this.createdAt,
@@ -58,6 +60,7 @@ class Order {
   }) {
     return Order(
         id: id ?? this.id,
+        userId: userId,
         orderNumber: orderNumber ?? this.orderNumber,
         status: status ?? this.status,
         createdAt: createdAt ?? this.createdAt,
@@ -78,6 +81,7 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
       id: json['id'] as String,
+      userId: json['user_id'],
       orderNumber: json['order_number'] as String,
       status: OrderStatusX.fromString(json['order_status'] as String),
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -97,6 +101,7 @@ class Order {
           .map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
           .toList(),
       customerNotes: json['customer_notes'] as String?,
+      deliveryId: json["delivery_id"] as String?,
       isFreeDelivery: json['is_free_delivery'] ?? false,
     );
   }

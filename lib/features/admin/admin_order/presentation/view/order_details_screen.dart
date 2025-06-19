@@ -6,14 +6,73 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class OrderDetailsScreen extends StatelessWidget {
+class OrderDetailsScreen extends StatefulWidget {
   final Order order;
   final double exchange;
 
   const OrderDetailsScreen(
       {super.key, required this.order, required this.exchange});
+
+  @override
+  State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
+}
+
+class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
+  Map<String, dynamic>? _clientData;
+  Map<String, dynamic>? _deliveryData;
+  bool _isLoadingClientData = false;
+  bool _isLoadingDeliveryData = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchClientData();
+    if (widget.order.status != OrderStatus.pending &&
+        widget.order.deliveryId != null) {
+      _fetchDeliveryData();
+    }
+  }
+
+  Future<void> _fetchDeliveryData() async {
+    setState(() => _isLoadingDeliveryData = true);
+    try {
+      final response = await Supabase.instance.client
+          .from('delivery')
+          .select('user_name, phone_number')
+          .eq('id', widget.order.deliveryId!)
+          .single();
+
+      setState(() {
+        _deliveryData = response;
+        _isLoadingDeliveryData = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingDeliveryData = false);
+      debugPrint('Error fetching delivery data: $e');
+    }
+  }
+
+  Future<void> _fetchClientData() async {
+    setState(() => _isLoadingClientData = true);
+    try {
+      final response = await Supabase.instance.client
+          .from('clients')
+          .select('user_name, phone_number')
+          .eq('id', widget.order.userId)
+          .single();
+
+      setState(() {
+        _clientData = response;
+        _isLoadingClientData = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingClientData = false);
+      debugPrint('Error fetching client data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +81,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('تفاصيل الطلب #${order.orderNumber}'),
+        title: Text('تفاصيل الطلب #${widget.order.orderNumber}'),
         backgroundColor: theme.primaryColor,
         centerTitle: true,
       ),
@@ -58,13 +117,13 @@ class OrderDetailsScreen extends StatelessWidget {
                               vertical: 6.h,
                             ),
                             decoration: BoxDecoration(
-                              color: order.status.color.withOpacity(0.2),
+                              color: widget.order.status.color.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(20.r),
                             ),
                             child: Text(
-                              order.status.displayText,
+                              widget.order.status.displayText,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: order.status.color,
+                                color: widget.order.status.color,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -88,46 +147,93 @@ class OrderDetailsScreen extends StatelessWidget {
                   padding: EdgeInsets.all(16.w),
                   child: Column(
                     children: [
-                      _buildDetailRow(
-                        icon: Icons.person,
-                        label: 'الاسم',
-                        value: order.deliveryAddress.title,
-                      ),
-                      _buildDetailRow(
-                        icon: Icons.location_on,
-                        label: 'العنوان',
-                        value: order.deliveryAddress.address,
-                      ),
-                      if (order.deliveryAddress.additionalInfo != null)
+                      if (_isLoadingClientData)
+                        const Center(child: CircularProgressIndicator())
+                      else ...[
                         _buildDetailRow(
-                          icon: Icons.info,
-                          label: 'معلومات إضافية',
-                          value: order.deliveryAddress.additionalInfo!,
+                          icon: Icons.person,
+                          label: 'اسم العميل',
+                          value: _clientData?['user_name'] ?? 'غير متوفر',
                         ),
-                      SizedBox(height: 8.h),
-                      ElevatedButton.icon(
-                        onPressed: () => _launchMaps(
-                          order.deliveryAddress.latitude,
-                          order.deliveryAddress.longitude,
+                        _buildDetailRow(
+                          icon: Icons.phone,
+                          label: 'رقم الجوال',
+                          value: _clientData?['phone_number'] ?? 'غير متوفر',
                         ),
-                        icon: const Icon(Icons.directions),
-                        label: const Text(
-                          textAlign: TextAlign.center,
-                          'فتح في الخريطة',
-                          style: TextStyle(color: Colors.white),
+                        _buildDetailRow(
+                          icon: Icons.person,
+                          label: 'الاسم في العنوان',
+                          value: widget.order.deliveryAddress.title,
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.r),
+                        _buildDetailRow(
+                          icon: Icons.location_on,
+                          label: 'العنوان',
+                          value: widget.order.deliveryAddress.address,
+                        ),
+                        if (widget.order.deliveryAddress.additionalInfo != null)
+                          _buildDetailRow(
+                            icon: Icons.info,
+                            label: 'معلومات إضافية',
+                            value: widget.order.deliveryAddress.additionalInfo!,
+                          ),
+                        SizedBox(height: 8.h),
+                        ElevatedButton.icon(
+                          onPressed: () => _launchMaps(
+                            widget.order.deliveryAddress.latitude,
+                            widget.order.deliveryAddress.longitude,
+                          ),
+                          icon: const Icon(Icons.directions),
+                          label: const Text(
+                            textAlign: TextAlign.center,
+                            'فتح في الخريطة',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: theme.primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
               ),
               SizedBox(height: 16.h),
+              if (widget.order.status != OrderStatus.pending &&
+                  widget.order.deliveryId != null) ...[
+                SizedBox(height: 16.h),
+                _buildSectionTitle('معلومات المندوب'),
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(16.w),
+                    child: Column(
+                      children: [
+                        if (_isLoadingDeliveryData)
+                          const Center(child: CircularProgressIndicator())
+                        else ...[
+                          _buildDetailRow(
+                            icon: Icons.person,
+                            label: 'اسم المندوب',
+                            value: _deliveryData?['user_name'] ?? 'غير متوفر',
+                          ),
+                          _buildDetailRow(
+                            icon: Icons.phone,
+                            label: 'رقم الجوال',
+                            value:
+                                _deliveryData?['phone_number'] ?? 'غير متوفر',
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
 
               // Order Items
               _buildSectionTitle('الطلبات'),
@@ -140,7 +246,7 @@ class OrderDetailsScreen extends StatelessWidget {
                   padding: EdgeInsets.all(16.w),
                   child: Column(
                     children: [
-                      ...order.items.map((item) => Padding(
+                      ...widget.order.items.map((item) => Padding(
                             padding: EdgeInsets.only(bottom: 12.h),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,14 +275,14 @@ class OrderDetailsScreen extends StatelessWidget {
                                       ),
                                       SizedBox(height: 4.h),
                                       Text(
-                                        '${item.quantity} × ${PriceConverter.displayConvertedPrice(saudiPrice: item.unitPrice, exchangeRate: exchange)}',
+                                        '${item.quantity} × ${PriceConverter.displayConvertedPrice(saudiPrice: item.unitPrice, exchangeRate: widget.exchange)}',
                                         style: theme.textTheme.bodySmall,
                                       ),
                                     ],
                                   ),
                                 ),
                                 Text(
-                                  "${PriceConverter.convertToYemeni(saudiPrice: item.unitPrice, exchangeRate: exchange) * item.quantity}",
+                                  "${PriceConverter.convertToYemeni(saudiPrice: item.unitPrice, exchangeRate: widget.exchange) * item.quantity}",
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -204,32 +310,33 @@ class OrderDetailsScreen extends StatelessWidget {
                       _buildSummaryRow(
                         'المجموع الفرعي',
                         PriceConverter.displayConvertedPrice(
-                            saudiPrice: order.subtotal, exchangeRate: exchange),
+                            saudiPrice: widget.order.subtotal,
+                            exchangeRate: widget.exchange),
                       ),
                       _buildSummaryRow(
                         'رسوم التوصيل',
                         PriceConverter.displayConvertedPrice(
-                            saudiPrice: order.deliveryFee,
-                            exchangeRate: exchange),
+                            saudiPrice: widget.order.deliveryFee,
+                            exchangeRate: widget.exchange),
                       ),
-                      if (order.discount > 0)
+                      if (widget.order.discount > 0)
                         _buildSummaryRow(
                           'الخصم',
-                          '-${currencyFormat.format(order.discount)}',
+                          '-${currencyFormat.format(widget.order.discount)}',
                         ),
                       Divider(height: 24.h),
                       _buildSummaryRow(
                         'المجموع الكلي',
                         PriceConverter.displayConvertedPrice(
-                            saudiPrice: order.totalAmount,
-                            exchangeRate: exchange),
+                            saudiPrice: widget.order.totalAmount,
+                            exchangeRate: widget.exchange),
                         isTotal: true,
                       ),
                       SizedBox(height: 8.h),
                       _buildDetailRow(
-                        icon: order.paymentMethod.icon,
+                        icon: widget.order.paymentMethod.icon,
                         label: 'طريقة الدفع',
-                        value: order.paymentMethod.displayText,
+                        value: widget.order.paymentMethod.displayText,
                       ),
                     ],
                   ),
@@ -238,7 +345,7 @@ class OrderDetailsScreen extends StatelessWidget {
               SizedBox(height: 16.h),
 
               // Order Notes
-              if (order.customerNotes != null) ...[
+              if (widget.order.customerNotes != null) ...[
                 _buildSectionTitle('ملاحظات العميل'),
                 Card(
                   elevation: 2,
@@ -248,7 +355,7 @@ class OrderDetailsScreen extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(16.w),
                     child: Text(
-                      order.customerNotes!,
+                      widget.order.customerNotes!,
                       style: theme.textTheme.bodyMedium,
                     ),
                   ),
@@ -269,13 +376,13 @@ class OrderDetailsScreen extends StatelessWidget {
                     children: [
                       _buildTimelineItem(
                         'تم إنشاء الطلب',
-                        order.createdAt,
+                        widget.order.createdAt,
                         icon: Icons.add_shopping_cart,
                       ),
-                      if (order.updatedAt != null)
+                      if (widget.order.updatedAt != null)
                         _buildTimelineItem(
                           'تم التحديث',
-                          order.updatedAt!,
+                          widget.order.updatedAt!,
                           icon: Icons.update,
                         ),
                     ],

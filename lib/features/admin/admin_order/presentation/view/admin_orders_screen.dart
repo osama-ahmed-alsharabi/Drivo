@@ -174,6 +174,7 @@ class _OrderCard extends StatelessWidget {
                   ),
                 ],
               ),
+
               SizedBox(height: 8.h),
               Row(
                 children: [
